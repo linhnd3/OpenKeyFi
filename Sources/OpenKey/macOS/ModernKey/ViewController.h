@@ -48,6 +48,7 @@
 
 @property (weak) IBOutlet NSButton *UseMacro;
 @property (weak) IBOutlet NSButton *UseMacroInEnglishMode;
+@property (weak) IBOutlet NSButton *FinnishTyping;
 
 @property (weak) IBOutlet NSButton *SendKeyStepByStep;
 @property (weak) IBOutlet NSButton *AutoRememberSwitchKey;

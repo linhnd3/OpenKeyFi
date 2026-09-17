@@ -34,6 +34,7 @@ extern int vQuickEndConsonant;
 extern int vRememberCode;
 extern int vOtherLanguage;
 extern int vTempOffOpenKey;
+extern int vFinnishTyping;
 extern int vShowIconOnDock;
 extern int vAutoCapsMacro;
 extern int vFixChromiumBrowser;
@@ -336,6 +337,11 @@ extern int vPerformLayoutCompat;
     vQuickEndConsonant = (int)val;
 }
 
+- (IBAction)onFinnishTypingChanged:(id)sender {
+    NSInteger val = [self setCustomValue:sender keyToSet:@"vFinnishTyping"];
+    vFinnishTyping = (int)val;
+}
+
 - (IBAction)onTempOffOpenKeyByHotKey:(id)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"vTempOffOpenKey"];
     vTempOffOpenKey = (int)val;
@@ -462,6 +468,9 @@ extern int vPerformLayoutCompat;
     
     value = [[NSUserDefaults standardUserDefaults] integerForKey:@"vTempOffOpenKey"];
     self.TempOffOpenKey.state = value ? NSControlStateValueOn : NSControlStateValueOff;
+    
+    value = [[NSUserDefaults standardUserDefaults] integerForKey:@"vFinnishTyping"];
+    self.FinnishTyping.state = value ? NSControlStateValueOn : NSControlStateValueOff;
     
     value = [[NSUserDefaults standardUserDefaults] integerForKey:@"vAutoCapsMacro"];
     self.AutoCapsMacro.state = value ? NSControlStateValueOn : NSControlStateValueOff;

@@ -1428,6 +1428,17 @@
                                                 <action selector="onQuickEndConsonant:" target="XfG-lQ-9wD" id="RWg-gD-62O"/>
                                             </connections>
                                         </button>
+                                        <button toolTip="Gõ ký tự tiếng Phần Lan ở cả chế độ Tiếng Việt và Tiếng Anh: aq→ä, oq→ö, aqq→å (gõ thêm q để trả lại)" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FnT-yp-Chk">
+                                            <rect key="frame" x="243" y="55" width="262" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="check" title="Gõ ä ö å: aq→ä, oq→ö, aqq→å" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="FnT-cl-Chk">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="onFinnishTypingChanged:" target="XfG-lQ-9wD" id="FnT-ac-Chk"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                 </view>
                                 <color key="borderColor" name="unemphasizedSelectedContentBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1694,6 +1705,7 @@
                         <outlet property="CustomSwitchShift" destination="wh2-uV-nSn" id="uJw-Tj-F5N"/>
                         <outlet property="EngButton" destination="yUA-UQ-mxx" id="QKJ-tU-dsA"/>
                         <outlet property="FixChromiumBrowser" destination="efe-07-OlS" id="PMH-MH-7Ea"/>
+                        <outlet property="FinnishTyping" destination="FnT-yp-Chk" id="FnT-ou-Chk"/>
                         <outlet property="FixRecommendBrowser" destination="BKq-hz-RRL" id="V6H-kl-20B"/>
                         <outlet property="FreeMarkButton" destination="f8B-EV-EE1" id="u6V-zD-Xqg"/>
                         <outlet property="OtherLanguage" destination="uew-J8-1eo" id="LFp-j1-L5Z"/>

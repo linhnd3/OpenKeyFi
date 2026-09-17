@@ -46,6 +46,7 @@ extern AppDelegate* appDelegate;
 extern int vSendKeyStepByStep;
 extern int vFixChromiumBrowser;
 extern int vPerformLayoutCompat;
+extern int vFinnishTyping;
 
 extern "C" {
     //app which must sent special empty character
@@ -80,6 +81,11 @@ extern "C" {
     int _i, _j, _k;
     Uint32 _tempChar;
     bool _hasJustUsedHotKey = false;
+    
+    //Finnish typing: aq=ä, aqq=å, aqqq=aq, oq=ö, oqq=oq
+    enum { FINNISH_NONE = 0, FINNISH_A, FINNISH_A_UMLAUT, FINNISH_A_RING, FINNISH_O, FINNISH_O_UMLAUT };
+    int _finnishState = FINNISH_NONE;
+    bool _finnishCaps = false;
 
     int _languageTemp = 0; //use for smart switch key
     vector<Byte> savedSmartSwitchKeyData; ////use for smart switch key
@@ -109,6 +115,7 @@ extern "C" {
         LOAD_DATA(vRememberCode, vRememberCode);
         LOAD_DATA(vOtherLanguage, vOtherLanguage);
         LOAD_DATA(vTempOffOpenKey, vTempOffOpenKey);
+        LOAD_DATA(vFinnishTyping, vFinnishTyping);
         
         LOAD_DATA(vFixChromiumBrowser, vFixChromiumBrowser);
         
@@ -569,6 +576,61 @@ extern "C" {
         SendKeyCode(_keycode | (_flag & kCGEventFlagMaskShift ? CAPS_MASK : 0));
     }
 
+    //remember plain a/o which is just typed, so the next Q key can convert it
+    void updateFinnishState() {
+        _finnishState = FINNISH_NONE;
+        if (!vFinnishTyping || OTHER_CONTROL_KEY)
+            return;
+        if (_keycode == KEY_A)
+            _finnishState = FINNISH_A;
+        else if (_keycode == KEY_O)
+            _finnishState = FINNISH_O;
+        _finnishCaps = (_flag & kCGEventFlagMaskShift) || (_flag & kCGEventFlagMaskAlphaShift);
+    }
+    
+    void handleFinnishKey() {
+        //fix autocomplete
+        if (shouldUseRecommendWorkaround(FRONT_APP)) {
+            SendEmptyCharacter();
+            CGEventTapPostEvent(_proxy, eventBackSpaceDown);
+            CGEventTapPostEvent(_proxy, eventBackSpaceUp);
+        }
+        CGEventTapPostEvent(_proxy, eventBackSpaceDown);
+        CGEventTapPostEvent(_proxy, eventBackSpaceUp);
+        
+        switch (_finnishState) {
+            case FINNISH_A:
+                SendPureCharacter(_finnishCaps ? 0x00C4 : 0x00E4); //Ä ä
+                _finnishState = FINNISH_A_UMLAUT;
+                break;
+            case FINNISH_A_UMLAUT:
+                SendPureCharacter(_finnishCaps ? 0x00C5 : 0x00E5); //Å å
+                _finnishState = FINNISH_A_RING;
+                break;
+            case FINNISH_A_RING:
+                SendPureCharacter(_finnishCaps ? 'A' : 'a');
+                SendPureCharacter('q');
+                _finnishState = FINNISH_NONE;
+                break;
+            case FINNISH_O:
+                SendPureCharacter(_finnishCaps ? 0x00D6 : 0x00F6); //Ö ö
+                _finnishState = FINNISH_O_UMLAUT;
+                break;
+            case FINNISH_O_UMLAUT:
+                SendPureCharacter(_finnishCaps ? 'O' : 'o');
+                SendPureCharacter('q');
+                _finnishState = FINNISH_NONE;
+                break;
+        }
+        
+        if (vLanguage == 1) {
+            startNewSession();
+        }
+        if (IS_DOUBLE_CODE(vCodeTable)) {
+            _syncKey.clear();
+        }
+    }
+
     // TODO: Research API to convert character into CGKeyCode more elegantly!
     int ConvertKeyStringToKeyCode(NSString *keyString, CGKeyCode fallback) {
         // Infomation about capitalization (shift/caps) is already included
@@ -668,8 +730,22 @@ extern "C" {
         
         _proxy = proxy;
         
+        //Finnish typing, work in both english and vietnamese mode
+        if (type == kCGEventKeyDown) {
+            if (vFinnishTyping && _keycode == KEY_Q && _finnishState != FINNISH_NONE && !(OTHER_CONTROL_KEY)) {
+                handleFinnishKey();
+                return NULL;
+            }
+            _finnishState = FINNISH_NONE;
+        } else if (type != kCGEventKeyUp) { //mouse
+            _finnishState = FINNISH_NONE;
+        }
+        
         //If is in english mode
         if (vLanguage == 0) {
+            if (type == kCGEventKeyDown) {
+                updateFinnishState();
+            }
             if (vUseMacro && vUseMacroInEnglishMode && type == kCGEventKeyDown) {
                 vEnglishMode((type == kCGEventKeyDown ? vKeyEventState::KeyDown : vKeyEventState::MouseDown),
                              _keycode,
@@ -677,6 +753,7 @@ extern "C" {
                              OTHER_CONTROL_KEY);
                 
                 if (pData->code == vReplaceMaro) { //handle macro in english mode
+                    _finnishState = FINNISH_NONE;
                     handleMacro();
                     return NULL;
                 }
@@ -718,6 +795,7 @@ extern "C" {
                             _flag & kCGEventFlagMaskShift ? 1 : (_flag & kCGEventFlagMaskAlphaShift ? 2 : 0),
                             OTHER_CONTROL_KEY);
             if (pData->code == vDoNothing) { //do nothing
+                updateFinnishState();
                 if (IS_DOUBLE_CODE(vCodeTable)) { //VNI
                     if (pData->extCode == 1) { //break key
                         _syncKey.clear();
