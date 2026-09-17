@@ -49,6 +49,7 @@ int vQuickEndConsonant = 0;
 int vRememberCode = 1; //new on version 2.0
 int vOtherLanguage = 1; //new on version 2.0
 int vTempOffOpenKey = 0; //new on version 2.0
+int vFinnishTyping = 0; //aq=ä, oq=ö, aqq=å
 
 int vShowIconOnDock = 0; //new on version 2.0
 
@@ -308,6 +309,7 @@ extern bool convertToolDontAlertWhenCompleted;
     vRememberCode = 1;[[NSUserDefaults standardUserDefaults] setInteger:vRememberCode forKey:@"vRememberCode"];
     vOtherLanguage = 1;[[NSUserDefaults standardUserDefaults] setInteger:vOtherLanguage forKey:@"vOtherLanguage"];
     vTempOffOpenKey = 0;[[NSUserDefaults standardUserDefaults] setInteger:vTempOffOpenKey forKey:@"vTempOffOpenKey"];
+    vFinnishTyping = 0;[[NSUserDefaults standardUserDefaults] setInteger:vFinnishTyping forKey:@"vFinnishTyping"];
     vShowIconOnDock = 0;[[NSUserDefaults standardUserDefaults] setInteger:vShowIconOnDock forKey:@"vShowIconOnDock"];
     vFixChromiumBrowser = 0;[[NSUserDefaults standardUserDefaults] setInteger:vFixChromiumBrowser forKey:@"vFixChromiumBrowser"];
     vPerformLayoutCompat = 0;[[NSUserDefaults standardUserDefaults] setInteger:vPerformLayoutCompat forKey:@"vPerformLayoutCompat"];
@@ -320,7 +322,7 @@ extern bool convertToolDontAlertWhenCompleted;
 }
 
 -(void)setRunOnStartup:(BOOL)val {
-    CFStringRef appId = (__bridge CFStringRef)@"com.tuyenmai.OpenKeyHelper";
+    CFStringRef appId = (__bridge CFStringRef)@"com.linh116.openkeyfi.OpenKeyHelper";
     SMLoginItemSetEnabled(appId, val);
 }
 
