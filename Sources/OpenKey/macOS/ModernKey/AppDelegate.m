@@ -322,7 +322,7 @@ extern bool convertToolDontAlertWhenCompleted;
 }
 
 -(void)setRunOnStartup:(BOOL)val {
-    CFStringRef appId = (__bridge CFStringRef)@"com.tuyenmai.OpenKeyHelper";
+    CFStringRef appId = (__bridge CFStringRef)@"com.linh116.openkeyfi.OpenKeyHelper";
     SMLoginItemSetEnabled(appId, val);
 }
 
